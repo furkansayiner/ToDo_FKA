@@ -1,0 +1,32 @@
+﻿@model ToDo
+@* ASP.NET Core Razor sayfasında bir yeni görev eklemek için kullanılabilir. HTML formu, görevin açıklamasını, kategorisini, son tarihini ve durumunu girmek için gerekli alanları içerir. *@
+<h2>Yeni Görev Ekle</h2>
+
+<div asp-validation-summary="All" class="text-danger"></div>
+
+<form asp-action="Add" method="post">
+    <div class="mb-3">
+        <label asp-for="Description" class="form-label">Görev</label>
+        <input asp-for="Description" class="form-control" required />
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="CategoryId" class="form-label">Kategori</label>
+        <select asp-for="CategoryId" class="form-select" asp-items="@(new SelectList(ViewBag.Categories,"CategoryId","Name"))">
+            <option value=""></option>
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="DueDate" class="form-label">Tarih</label>
+        <input type="date" asp-for="DueDate" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="StatusId" class="form-label">Durum</label>
+        <select asp-for="StatusId" class="form-select" asp-items="@(new SelectList(ViewBag.Statuses,"StatusId","Name"))">
+        </select>
+    </div>
+    <button type="submit" class="btn btn-danger">Ekle</button>
+    <a asp-action="Index" class="btn btn-danger">İptal</a>
+</form>

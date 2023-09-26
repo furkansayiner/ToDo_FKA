@@ -1,0 +1,78 @@
+﻿@model IEnumerable<ToDo>
+@*  bir görev listesi ve bu görevleri filtreleme ve işleme yeteneği sağlayan bir ASP.NET Core Razor sayfasını temsil eder. *@
+<form asp-action="Filter" method="post">
+    <div class="mb-3">
+        <label class="form-label">Kategori</label>
+        <select name="filterCategory" class="form-select"
+                asp-items="@(new SelectList(ViewBag.Categories, "CategoryId", "Name", ViewBag.Filters.CategoryId ?? "all"))">
+            <option value="all">All</option>
+        </select>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Zaman</label>
+        <select name="filterDue" class="form-select"
+                asp-items="@(new SelectList(ToDoApp.Models.Filters.DueFilterValues, "Key", "Value", ViewBag.Filters.Due ?? "all"))">
+            <option value="all">All</option>
+        </select>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Durum</label>
+        @if (ViewBag.Statuses != null)
+        {
+            <select name="filter" class="form-select"
+                    asp-items="@(new SelectList(ViewBag.Statuses, "StatusId", "Name", ViewBag.Filters.StatusId ?? "all"))">
+                <option value="all">All</option>
+            </select>
+        }
+        else
+        {
+            <p>No statuses found.</p>
+        }
+    </div>
+    <button type="submit" class="btn btn-danger">Filtrele</button>
+    <a asp-action="Index" asp-route-id="" class="btn btn-danger">Sil</a>
+</form>
+
+<div class="col-md-10">
+    <form asp-action="MarkComplete" method="post" asp-route-id="@ViewBag.Filters.Filterstring">
+        <table class="table table-bordered table-striped mt-2">
+            <thead>
+                <tr>
+                    <th> Tanım</th>
+                    <th> Kategori</th>
+                    <th> Bitme Zamanı</th>
+                    <th> Status</th>
+                    <th class="w-25"> </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var task in Model)
+                {
+                    string overdue = task.Overdue ? "bg-warning" : "";
+                    <tr>
+                        <td>@task.Description</td>
+                        <td>@task.Category.Name</td>
+                        <td class="@overdue">@task.DueDate?.ToShortDateString()</td>
+                        <td class="@overdue">@task.Status.Name</td>
+                        <td>
+                            @if (task.StatusId == "open")
+                            {
+                                <form asp-action="MarkComplete" method="post">
+                                    <input type="hidden" name="id" value="@task.Id" />
+                                    <button type="submit" class="btn btn-danger btn-sm">
+                                        Mark Completed
+                                    </button>
+                                </form>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </form>
+    <form asp-action="DeleteComplete" method="post" asp-route-id="@ViewBag.Filters.Filterstring">
+        <a asp-action="Add" class="btn btn-danger">Yeni Ekle</a>
+        <button type="submit" class="btn btn-danger">Tamamlanan Görevi Sil</button>
+    </form>
+</div>
+
